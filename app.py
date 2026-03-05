@@ -1,7 +1,7 @@
 from ingest import ingest_documents
 import streamlit as st
+import streamlit.components.v1 as components
 import os
-import speech_recognition as sr
 from src.qa_chain import get_qa_chain
 
 st.set_page_config(
@@ -116,50 +116,72 @@ elif page == "HR Chatbot":
     st.divider()
 
     # --------------------------
-    # Voice Input
+    # Voice Input (Browser-based)
     # --------------------------
 
     st.write("🎤 **Voice Input:**")
-    voice_col1, voice_col2 = st.columns([1, 5])
-    voice_text = ""
-    with voice_col1:
-        if st.button("🎤 Speak"):
-            with st.spinner("Listening..."):
-                try:
-                    recognizer = sr.Recognizer()
-                    with sr.Microphone() as source:
-                        recognizer.adjust_for_ambient_noise(source, duration=1)
-                        audio = recognizer.listen(source, timeout=5)
-                        voice_text = recognizer.recognize_google(audio)
-                        st.session_state.voice_input = voice_text
-                        st.success(f"You said: {voice_text}")
-                except sr.WaitTimeoutError:
-                    st.warning("No speech detected. Please try again.")
-                except sr.UnknownValueError:
-                    st.warning("Could not understand audio. Please try again.")
-                except Exception as e:
-                    st.error(f"Microphone error: {str(e)}")
+
+    voice_html = """
+    <script>
+    function startRecording() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.start();
+        document.getElementById('status').innerText = '🎤 Listening...';
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById('result').innerText = transcript;
+            document.getElementById('status').innerText = '✅ Done! Copy the text above and paste it in the chat.';
+        };
+        recognition.onerror = function() {
+            document.getElementById('status').innerText = '❌ Error. Please try again.';
+        };
+    }
+    </script>
+    <button onclick="startRecording()" style="
+        padding:10px 20px;
+        background:#ff4b4b;
+        color:white;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        font-size:16px;
+        margin-bottom:10px;">
+        🎤 Click to Speak
+    </button>
+    <p id="status" style="color:gray; margin:4px 0;">Click the button and speak</p>
+    <p id="result" style="color:white; font-weight:bold; font-size:16px; margin:4px 0;"></p>
+    """
+
+    components.html(voice_html, height=130)
 
     st.divider()
 
-    # Display chat history
+    # --------------------------
+    # Chat History
+    # --------------------------
+
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
-    # Determine input — voice, suggested button, or typed
+    # --------------------------
+    # Input Handling
+    # --------------------------
+
     user_input = None
+
     if clicked_question:
         user_input = clicked_question
-    elif "voice_input" in st.session_state and st.session_state.voice_input:
-        user_input = st.session_state.voice_input
-        st.session_state.voice_input = ""
-    
+
     typed_input = st.chat_input("Ask about HR policies...")
     if typed_input:
         user_input = typed_input
 
-    # Process the question
+    # --------------------------
+    # Process Question
+    # --------------------------
+
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
@@ -175,9 +197,10 @@ elif page == "HR Chatbot":
                 except Exception as e:
                     st.error(f"Error: {str(e)}")
 
-        if st.button("🗑️ Clear Chat"):
-            st.session_state.messages = []
-            st.rerun()
+    st.divider()
+    if st.button("🗑️ Clear Chat"):
+        st.session_state.messages = []
+        st.rerun()
 
 # --------------------------
 # Upload Documents
@@ -207,14 +230,14 @@ elif page == "Upload Documents":
 elif page == "About":
     st.title("ℹ️ About HR Assistant")
     st.write("""
-    This HR Assistant is powered by AI to help employees quickly find answers 
+    This HR Assistant is powered by AI to help employees quickly find answers
     to HR-related questions based on company documents and policies.
-    
+
     **Technologies used:**
     - Streamlit
     - LangChain
     - Groq (Llama 3.3)
     - FAISS Vector Store
     - HuggingFace Embeddings
-    - SpeechRecognition (Voice Input)
+    - Web Speech API (Voice Input)
     """)
