@@ -10,11 +10,26 @@ def get_embeddings():
     )
 
 def create_vectorstore(chunks):
+
+    # remove empty chunks
+    clean_chunks = []
+
+    for chunk in chunks:
+        if chunk.page_content and isinstance(chunk.page_content, str):
+            clean_chunks.append(chunk)
+
     embeddings = get_embeddings()
+
     vectorstore = FAISS.from_documents(
-        documents=chunks,
+        documents=clean_chunks,
         embedding=embeddings
     )
+
+    vectorstore.save_local(VECTORSTORE_PATH)
+
+    print(f"Vectorstore created with {len(clean_chunks)} chunks")
+
+    return vectorstore
     vectorstore.save_local(VECTORSTORE_PATH)
     print(f'Vectorstore created with {len(chunks)} chunks')
     return vectorstore
