@@ -1,5 +1,7 @@
 import streamlit as st
+import os
 from src.qa_chain import get_qa_chain
+from ingest import ingest_documents
 
 st.set_page_config(
     page_title="HR Assistant",
@@ -7,16 +9,20 @@ st.set_page_config(
     layout="wide"
 )
 
-# Sidebar Navigation
+# ----------------------------
+# Sidebar
+# ----------------------------
+
 st.sidebar.title("💼 HR Assistant")
+
 page = st.sidebar.radio(
     "Navigation",
     ["Dashboard", "HR Chatbot", "Upload Documents", "About"]
 )
 
-# ------------------------------
-# DASHBOARD
-# ------------------------------
+# ----------------------------
+# Dashboard
+# ----------------------------
 
 if page == "Dashboard":
 
@@ -38,9 +44,9 @@ if page == "Dashboard":
     st.write("• New work from home policy updated")
     st.write("• Health insurance benefits revised")
 
-# ------------------------------
-# HR CHATBOT
-# ------------------------------
+# ----------------------------
+# HR Chatbot
+# ----------------------------
 
 elif page == "HR Chatbot":
 
@@ -49,7 +55,7 @@ elif page == "HR Chatbot":
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # display previous messages
+    # Display old messages
     for role, message in st.session_state.messages:
 
         if role == "user":
@@ -58,14 +64,18 @@ elif page == "HR Chatbot":
         else:
             st.chat_message("assistant").write(message)
 
-    # user input
+    # Chat input
     user_input = st.chat_input("Ask about HR policies...")
 
     if user_input:
 
-        st.chat_message("user").write(user_input)
+        # Create vectorstore automatically if missing
+        if not os.path.exists("vectorstore"):
+            ingest_documents()
 
         qa_chain = get_qa_chain()
+
+        st.chat_message("user").write(user_input)
 
         response = qa_chain.invoke({
             "query": str(user_input)
@@ -78,9 +88,9 @@ elif page == "HR Chatbot":
         st.session_state.messages.append(("user", user_input))
         st.session_state.messages.append(("assistant", answer))
 
-# ------------------------------
-# UPLOAD DOCUMENTS
-# ------------------------------
+# ----------------------------
+# Upload Documents
+# ----------------------------
 
 elif page == "Upload Documents":
 
@@ -93,14 +103,16 @@ elif page == "Upload Documents":
 
     if uploaded_file:
 
+        os.makedirs("data", exist_ok=True)
+
         with open(f"data/{uploaded_file.name}", "wb") as f:
             f.write(uploaded_file.getbuffer())
 
         st.success("Document uploaded successfully")
 
-# ------------------------------
-# ABOUT
-# ------------------------------
+# ----------------------------
+# About
+# ----------------------------
 
 elif page == "About":
 
@@ -111,9 +123,10 @@ elif page == "About":
     employee questions using company HR policies.
 
     **Technology Stack**
-    - Streamlit
-    - LangChain
-    - FAISS Vector Database
-    - HuggingFace Embeddings
-    - Groq LLM
+
+    • Streamlit  
+    • LangChain  
+    • FAISS Vector Database  
+    • HuggingFace Embeddings  
+    • Groq LLM  
     """)
