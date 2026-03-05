@@ -85,7 +85,7 @@ elif page == "HR Chatbot":
 
         qa_chain = get_qa_chain()
 
-        response = qa_chain.invoke({"query": str(user_input)})
+       response = qa_chain.invoke({"query": str(user_input)})
         answer = response["result"]
 
         st.session_state.messages.append(("user", user_input))
