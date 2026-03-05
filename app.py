@@ -241,3 +241,15 @@ elif page == "About":
     - HuggingFace Embeddings
     - Web Speech API (Voice Input)
     """)
+
+    st.divider()
+
+    st.subheader("👩‍💼 Meet the Founder")
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.image("my_photo.jpeg", width=200)
+    with col2:
+        st.markdown("### Akaliya S")
+        st.write("🎓 AI & ML Developer")
+        st.write("💡 Built this HR Assistant to help employees get instant answers to HR queries using the power of AI and Large Language Models.")
+        st.write("📧 Contact: akaliya@example.com")
