@@ -142,11 +142,13 @@ elif page == "HR Chatbot":
 
     if user_input:
 
-        qa_chain = get_qa_chain()
-        response = qa_chain.run(user_input)
+    qa_chain = get_qa_chain()
 
-        st.session_state.messages.append(("user", user_input))
-        st.session_state.messages.append(("assistant", response))
+    response = qa_chain.invoke({"query": user_input})
+    answer = response["result"]
+
+    st.session_state.messages.append(("user", user_input))
+    st.session_state.messages.append(("assistant", answer))
 
     for role, msg in st.session_state.messages:
         if role == "user":
