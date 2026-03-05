@@ -13,7 +13,6 @@ def get_embeddings():
 
 def create_vectorstore(chunks):
 
-    # remove empty or invalid chunks
     clean_chunks = []
 
     for chunk in chunks:
@@ -22,13 +21,15 @@ def create_vectorstore(chunks):
 
             text = chunk.page_content
 
-            if isinstance(text, str) and text.strip() != "":
-                # remove newline characters
-                chunk.page_content = text.replace("\n", " ")
+            if isinstance(text, str):
 
-                clean_chunks.append(chunk)
+                text = text.strip()
 
-    print(f"Valid chunks: {len(clean_chunks)}")
+                if text != "":
+                    chunk.page_content = text.replace("\n", " ")
+                    clean_chunks.append(chunk)
+
+    print("Valid chunks:", len(clean_chunks))
 
     embeddings = get_embeddings()
 
@@ -39,7 +40,7 @@ def create_vectorstore(chunks):
 
     vectorstore.save_local(VECTORSTORE_PATH)
 
-    print("Vectorstore created successfully")
+    print("Vectorstore created")
 
     return vectorstore
 
