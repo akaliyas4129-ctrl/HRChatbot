@@ -245,11 +245,32 @@ elif page == "About":
     st.divider()
 
     st.subheader("👩‍💼 Meet the Founder")
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.image("my_photo.jpeg", width=200)
-    with col2:
-        st.markdown("### Akaliya S")
-        st.write("🎓 AI & ML Developer")
-        st.write("💡 Built this HR Assistant to help employees get instant answers to HR queries using the power of AI and Large Language Models.")
-        st.write("📧 Contact: akaliya@example.com")
+
+    import base64
+    from pathlib import Path
+
+    def get_image_base64(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+
+    try:
+        img_base64 = get_image_base64("my_photo.jpeg")
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            st.markdown(
+                f'<img src="data:image/jpeg;base64,{img_base64}" '
+                f'style="width:200px; height:200px; object-fit:cover; border-radius:50%;">',
+                unsafe_allow_html=True
+            )
+        with col2:
+            st.markdown("### Akaliya S")
+            st.write("🎓 AI & ML Developer")
+            st.write("💡 Built this HR Assistant to help employees get instant answers to HR queries using the power of AI.")
+            st.write("📧 Contact: akaliya@example.com")
+    except:
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            st.write("🧑‍💼")
+        with col2:
+            st.markdown("### Akaliya S")
+            st.write("🎓 AI & ML Developer")
