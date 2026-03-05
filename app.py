@@ -266,7 +266,7 @@ elif page == "About":
             st.markdown("### Akaliya S")
             st.write("🎓 AI & ML Developer")
             st.write("💡 Built this HR Assistant to help employees get instant answers to HR queries using the power of AI.")
-            st.write("📧 Contact: akaliya@example.com")
+            st.write("📧 Contact: akaliyas4129@gmail.com")
     except:
         col1, col2 = st.columns([1, 3])
         with col1:
