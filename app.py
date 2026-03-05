@@ -218,19 +218,3 @@ elif page == "About":
     - HuggingFace Embeddings
     - SpeechRecognition (Voice Input)
     """)
-```
-
----
-
-Also add `SpeechRecognition` and `pyaudio` to your `requirements.txt`:
-```
-streamlit
-langchain
-langchain-community
-langchain-core
-langchain-groq
-faiss-cpu
-sentence-transformers
-SpeechRecognition
-pyaudio
-python-dotenv
