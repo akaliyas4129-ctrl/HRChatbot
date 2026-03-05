@@ -2,21 +2,33 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 import os
 
-VECTORSTORE_PATH = 'vectorstore'
+VECTORSTORE_PATH = "vectorstore"
+
 
 def get_embeddings():
     return HuggingFaceEmbeddings(
-        model_name='all-MiniLM-L6-v2'
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
+
 
 def create_vectorstore(chunks):
 
-    # remove empty chunks
+    # remove empty or invalid chunks
     clean_chunks = []
 
     for chunk in chunks:
-        if chunk.page_content and isinstance(chunk.page_content, str):
-            clean_chunks.append(chunk)
+
+        if hasattr(chunk, "page_content"):
+
+            text = chunk.page_content
+
+            if isinstance(text, str) and text.strip() != "":
+                # remove newline characters
+                chunk.page_content = text.replace("\n", " ")
+
+                clean_chunks.append(chunk)
+
+    print(f"Valid chunks: {len(clean_chunks)}")
 
     embeddings = get_embeddings()
 
@@ -27,15 +39,15 @@ def create_vectorstore(chunks):
 
     vectorstore.save_local(VECTORSTORE_PATH)
 
-    print(f"Vectorstore created with {len(clean_chunks)} chunks")
+    print("Vectorstore created successfully")
 
     return vectorstore
-    vectorstore.save_local(VECTORSTORE_PATH)
-    print(f'Vectorstore created with {len(chunks)} chunks')
-    return vectorstore
+
 
 def load_vectorstore():
+
     embeddings = get_embeddings()
+
     return FAISS.load_local(
         VECTORSTORE_PATH,
         embeddings,
