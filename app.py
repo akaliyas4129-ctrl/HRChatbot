@@ -2,48 +2,14 @@ import streamlit as st
 import pandas as pd
 from src.qa_chain import get_qa_chain
 
+# Page configuration
 st.set_page_config(
     page_title="HR Assistant",
     page_icon="💼",
     layout="wide"
 )
 
-# ---------- CUSTOM CSS ----------
-st.markdown("""
-<style>
-
-body {
-    background-color:#F4F6FB;
-}
-
-.metric-card {
-    background: linear-gradient(135deg,#667eea,#764ba2);
-    padding:20px;
-    border-radius:15px;
-    color:white;
-    text-align:center;
-}
-
-.metric-number {
-    font-size:32px;
-    font-weight:700;
-}
-
-.metric-title {
-    font-size:16px;
-}
-
-.hero {
-    background: linear-gradient(90deg,#4facfe,#00f2fe);
-    padding:30px;
-    border-radius:15px;
-    color:white;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# ---------- SIDEBAR ----------
+# Sidebar
 st.sidebar.title("💼 HR Assistant")
 st.sidebar.caption("AI Powered HR Helpdesk")
 
@@ -55,67 +21,39 @@ page = st.sidebar.radio(
 st.sidebar.divider()
 st.sidebar.info("Built with Streamlit + LangChain + Groq")
 
-# ---------- HERO SECTION ----------
-st.markdown("""
-<div class="hero">
-<h1>💼 HR Assistant Dashboard</h1>
-<p>AI powered HR helpdesk for employees</p>
-</div>
-""", unsafe_allow_html=True)
+# Title
+st.title("💼 HR Assistant Dashboard")
+st.caption("AI powered HR helpdesk for employees")
 
-st.write("")
+st.divider()
 
-# ---------- DASHBOARD ----------
+# -----------------------
+# DASHBOARD
+# -----------------------
+
 if page == "Dashboard":
 
     st.subheader("📊 Company Overview")
 
     col1, col2, col3, col4 = st.columns(4)
 
-    with col1:
-        st.markdown("""
-        <div class="metric-card">
-        <div class="metric-title">Employees</div>
-        <div class="metric-number">120</div>
-        </div>
-        """, unsafe_allow_html=True)
+    col1.metric("👨‍💼 Employees", "120")
+    col2.metric("📄 HR Policies", "15")
+    col3.metric("📢 Announcements", "3")
+    col4.metric("💬 HR Queries Today", "27")
 
-    with col2:
-        st.markdown("""
-        <div class="metric-card">
-        <div class="metric-title">HR Policies</div>
-        <div class="metric-number">15</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col3:
-        st.markdown("""
-        <div class="metric-card">
-        <div class="metric-title">Announcements</div>
-        <div class="metric-number">3</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col4:
-        st.markdown("""
-        <div class="metric-card">
-        <div class="metric-title">Queries Today</div>
-        <div class="metric-number">27</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.write("")
+    st.divider()
 
     st.subheader("📈 HR Query Analytics")
 
     data = pd.DataFrame({
-        "Day": ["Mon","Tue","Wed","Thu","Fri"],
-        "Queries": [12,18,10,22,27]
+        "Day": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        "Queries": [12, 18, 10, 22, 27]
     })
 
     st.line_chart(data.set_index("Day"))
 
-    st.write("")
+    st.divider()
 
     col1, col2 = st.columns(2)
 
@@ -130,7 +68,10 @@ if page == "Dashboard":
         st.button("💬 Ask HR Chatbot")
         st.button("📄 Upload HR Policy")
 
-# ---------- CHATBOT ----------
+# -----------------------
+# HR CHATBOT
+# -----------------------
+
 elif page == "HR Chatbot":
 
     st.subheader("💬 HR Assistant Chat")
@@ -142,13 +83,13 @@ elif page == "HR Chatbot":
 
     if user_input:
 
-    qa_chain = get_qa_chain()
+        qa_chain = get_qa_chain()
 
-    response = qa_chain.invoke({"query": user_input})
-    answer = response["result"]
+        response = qa_chain.invoke({"query": user_input})
+        answer = response["result"]
 
-    st.session_state.messages.append(("user", user_input))
-    st.session_state.messages.append(("assistant", answer))
+        st.session_state.messages.append(("user", user_input))
+        st.session_state.messages.append(("assistant", answer))
 
     for role, msg in st.session_state.messages:
         if role == "user":
@@ -156,7 +97,10 @@ elif page == "HR Chatbot":
         else:
             st.chat_message("assistant").write(msg)
 
-# ---------- DOCUMENT UPLOAD ----------
+# -----------------------
+# UPLOAD DOCUMENTS
+# -----------------------
+
 elif page == "Upload Documents":
 
     st.subheader("📄 Upload HR Documents")
@@ -169,13 +113,16 @@ elif page == "Upload Documents":
     if uploaded_file:
         st.success("Document uploaded successfully!")
 
-# ---------- ABOUT ----------
+# -----------------------
+# ABOUT PAGE
+# -----------------------
+
 elif page == "About":
 
     st.subheader("ℹ️ About This Application")
 
     st.write("""
-This **AI-powered HR Assistant** helps employees quickly find answers about HR policies.
+This **AI-powered HR Assistant** helps employees quickly find answers about company policies.
 
 ### Features
 - 💬 HR Chatbot
