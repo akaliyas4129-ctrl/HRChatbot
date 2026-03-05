@@ -1,13 +1,23 @@
-from src.document_loader import load_documents, split_documents
+import os
+from src.document_loader import load_documents
 from src.vector_store import create_vectorstore
 
-print('Loading documents...')
-docs = load_documents()
+def ingest_documents():
 
-print('Splitting documents...')
-chunks = split_documents(docs)
+    print("Loading documents...")
 
-print('Creating vector store...')
-vectorstore = create_vectorstore(chunks)
+    documents = load_documents()
 
-print('Done! All documents indexed successfully.')
+    print(f"Loaded {len(documents)} documents")
+
+    print("Creating vectorstore...")
+
+    vectorstore = create_vectorstore(documents)
+
+    print("Vectorstore created successfully")
+
+    return vectorstore
+
+
+if __name__ == "__main__":
+    ingest_documents()

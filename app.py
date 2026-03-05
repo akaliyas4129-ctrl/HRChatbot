@@ -1,3 +1,4 @@
+from ingest import ingest_documents
 import streamlit as st
 import os
 from src.qa_chain import get_qa_chain
