@@ -1,39 +1,49 @@
 import streamlit as st
+import pandas as pd
 from src.qa_chain import get_qa_chain
 
-# Page config
 st.set_page_config(
     page_title="HR Assistant",
     page_icon="💼",
     layout="wide"
 )
 
-# ---------- Custom CSS ----------
+# ---------- CUSTOM CSS ----------
 st.markdown("""
 <style>
 
-.main-title {
-font-size:42px;
-font-weight:700;
-color:#2C3E50;
+body {
+    background-color:#F4F6FB;
 }
 
-.subtitle {
-font-size:18px;
-color:gray;
+.metric-card {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    padding:20px;
+    border-radius:15px;
+    color:white;
+    text-align:center;
 }
 
-.card {
-background-color:#f9fafc;
-padding:20px;
-border-radius:12px;
-box-shadow:0px 4px 10px rgba(0,0,0,0.05);
+.metric-number {
+    font-size:32px;
+    font-weight:700;
+}
+
+.metric-title {
+    font-size:16px;
+}
+
+.hero {
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    padding:30px;
+    border-radius:15px;
+    color:white;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Sidebar ----------
+# ---------- SIDEBAR ----------
 st.sidebar.title("💼 HR Assistant")
 st.sidebar.caption("AI Powered HR Helpdesk")
 
@@ -43,13 +53,17 @@ page = st.sidebar.radio(
 )
 
 st.sidebar.divider()
-st.sidebar.info("Built using Streamlit + LangChain + Groq")
+st.sidebar.info("Built with Streamlit + LangChain + Groq")
 
-# ---------- HEADER ----------
-st.markdown('<p class="main-title">HR Assistant Dashboard</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">AI powered HR helpdesk for employees</p>', unsafe_allow_html=True)
+# ---------- HERO SECTION ----------
+st.markdown("""
+<div class="hero">
+<h1>💼 HR Assistant Dashboard</h1>
+<p>AI powered HR helpdesk for employees</p>
+</div>
+""", unsafe_allow_html=True)
 
-st.divider()
+st.write("")
 
 # ---------- DASHBOARD ----------
 if page == "Dashboard":
@@ -59,30 +73,62 @@ if page == "Dashboard":
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.metric("👨‍💼 Employees", "120")
+        st.markdown("""
+        <div class="metric-card">
+        <div class="metric-title">Employees</div>
+        <div class="metric-number">120</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        st.metric("📄 HR Policies", "15")
+        st.markdown("""
+        <div class="metric-card">
+        <div class="metric-title">HR Policies</div>
+        <div class="metric-number">15</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col3:
-        st.metric("📢 Announcements", "3")
+        st.markdown("""
+        <div class="metric-card">
+        <div class="metric-title">Announcements</div>
+        <div class="metric-number">3</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col4:
-        st.metric("💬 HR Queries Today", "27")
+        st.markdown("""
+        <div class="metric-card">
+        <div class="metric-title">Queries Today</div>
+        <div class="metric-number">27</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.divider()
+    st.write("")
+
+    st.subheader("📈 HR Query Analytics")
+
+    data = pd.DataFrame({
+        "Day": ["Mon","Tue","Wed","Thu","Fri"],
+        "Queries": [12,18,10,22,27]
+    })
+
+    st.line_chart(data.set_index("Day"))
+
+    st.write("")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("### 📢 Latest HR Updates")
-        st.write("• Remote work policy updated")
-        st.write("• Health insurance renewal next month")
-        st.write("• Annual leave reset on January 1")
+        st.subheader("📢 Latest HR Updates")
+        st.success("Remote work policy updated")
+        st.info("Health insurance renewal next month")
+        st.warning("Annual leave reset on January 1")
 
     with col2:
-        st.markdown("### 🧑‍💼 HR Support")
-        st.info("Use the HR Chatbot to quickly find answers about HR policies, benefits, and employee guidelines.")
+        st.subheader("⚡ Quick Actions")
+        st.button("💬 Ask HR Chatbot")
+        st.button("📄 Upload HR Policy")
 
 # ---------- CHATBOT ----------
 elif page == "HR Chatbot":
@@ -92,7 +138,7 @@ elif page == "HR Chatbot":
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    user_input = st.chat_input("Ask a question about HR policies...")
+    user_input = st.chat_input("Ask about HR policies...")
 
     if user_input:
 
@@ -127,17 +173,15 @@ elif page == "About":
     st.subheader("ℹ️ About This Application")
 
     st.write("""
-This **AI-powered HR Assistant** helps employees quickly find answers about company policies.
+This **AI-powered HR Assistant** helps employees quickly find answers about HR policies.
 
-### Key Features
-
-- 💬 AI HR Chatbot
-- 📄 HR Document Search
+### Features
+- 💬 HR Chatbot
+- 📄 Document Search
 - 📊 HR Dashboard
-- ⚡ Fast responses powered by Groq
+- ⚡ Fast AI responses
 
-### Tech Stack
-
+### Technology
 - Streamlit
 - LangChain
 - Groq LLM
